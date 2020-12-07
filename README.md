@@ -1,2 +1,2 @@
 # glacios_uom
-scripts developed by me for use i the UoM EM facility
+scripts developed by me for use in the UoM EM facility
