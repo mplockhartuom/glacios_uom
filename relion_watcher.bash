@@ -35,13 +35,14 @@ fi
 echo "Path to gain image (inclusive of the .mrc file): "
 read gain_image
 
-if [[ -f $gain_image ]] 
-then
-  echo "$gain_image exists"
-else  
-  echo "###################################"
-  echo "#                                 #"
-  echo "#    That is not a real file.     #"
+: << 'IGNORE'
+#if [[ -f $gain_image ]] 
+#then
+#  echo "$gain_image exists"
+#else  
+#  echo "###################################"
+#  echo "#                                 #"
+#  echo "#    That is not a real file.     #"
   echo "#                                 #"
   echo "###################################"
   exit
@@ -50,6 +51,7 @@ echo "Moving gain to destination folder"
 echo "clip flipx $gain_image gain_flipx.mrc"
 gain_flipped="gain_flipx.mrc"
 echo "rsync -aPhzv *gain_flipx.mrc $dest_dir"
+IGNORE
 
 # start running the watching script for new  Linear file format files.
 inotifywait -mr --event create --event moved_to --format '%e %w%f' $collection_dir | while read ACTION FILE
@@ -57,9 +59,9 @@ inotifywait -mr --event create --event moved_to --format '%e %w%f' $collection_d
     echo "$FILE triggered with $ACTION"
     if [[ "$FILE" =~ .*mrc$ ]]; then
       if [[ "$ACTION" = "MOVED_TO"  ]] ; then
-    . ./relion_do_conv_gain.bash $FILE $collection_dir $dest_dir $gain &
+    . ./relion_do_conv_gain.bash $FILE $collection_dir $dest_dir &
     else 
-      . ./relion_converter_gain.bash $FILE $collection_dir $dest_dir $gain &
+      . ./relion_converter_gain.bash $FILE $collection_dir $dest_dir &
       fi
     fi
   done

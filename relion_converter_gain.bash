@@ -6,11 +6,11 @@ inotifywait -t 10 --format '%e %w%f' $1 | while read EVENT FILE
 do
   echo "$FILE written $EVENT"
   if [[ "$FILE" =~ .*mrc$ ]]; then
-    sleep 30
+    #sleep 30
     file_name=$(basename $1)
     directory=${1%"$file_name"} 
     cd $directory
-    relion_convert_to_tiff --i "$file_name" --gain "$4"  --o "$3"
+    relion_convert_to_tiff --i "$file_name" --o "$3"
     #mv ${FILE:0:-3}tif $2
   fi
 done
