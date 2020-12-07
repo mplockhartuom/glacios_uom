@@ -32,10 +32,10 @@ else
   echo "###################################"
   exit
 fi
-echo "Path to gain image (inclusive of the .mrc file): "
-read gain_image
 
 : << 'IGNORE'
+echo "Path to gain image (inclusive of the .mrc file): "
+read gain_image
 #if [[ -f $gain_image ]] 
 #then
 #  echo "$gain_image exists"
@@ -52,6 +52,11 @@ echo "clip flipx $gain_image gain_flipx.mrc"
 gain_flipped="gain_flipx.mrc"
 echo "rsync -aPhzv *gain_flipx.mrc $dest_dir"
 IGNORE
+
+# Make a list of existing mrc files and start converting them
+cd $collection_dir
+ls *.mrc > existing_files.lst
+relion_convert_to_tiff --i existing_files.lst --o $dest_dir &
 
 # start running the watching script for new  Linear file format files.
 inotifywait -mr --event create --event moved_to --format '%e %w%f' $collection_dir | while read ACTION FILE
