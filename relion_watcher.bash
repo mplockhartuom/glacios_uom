@@ -54,9 +54,26 @@ echo "rsync -aPhzv *gain_flipx.mrc $dest_dir"
 IGNORE
 
 # Make a list of existing mrc files and start converting them
+
+###
+### Clean this section up
+###
+current_dir=$PWD
 cd $collection_dir
+
+if [[ "ls *.mrc"  < "5" ]] ;
+	then
+	sleep 10
+	echo "Waiting for gain"
+fi
+
+ls *.mrc | head -5 > 5_files_gain.lst
+
+relion_convert_to_tiff --i 5_files_gain.lst --estinate_gain --o $dest_dir
+
 ls *.mrc > existing_files.lst
-relion_convert_to_tiff --i existing_files.lst --o $dest_dir &
+relion_convert_to_tiff --i existing_files.lst --gain $dest_dir/gain_estimate.bin --o $dest_dir &
+cd $current_dir
 
 # start running the watching script for new  Linear file format files.
 inotifywait -mr --event create --event moved_to --format '%e %w%f' $collection_dir | while read ACTION FILE
