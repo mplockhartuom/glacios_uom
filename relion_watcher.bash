@@ -49,7 +49,7 @@ if [[ "ls *.mrc"  < "5" ]] ;
 	echo "Waiting for gain"
 fi
 
-ls *.mrc | head -5 > 5_files_gain.lst
+ls */*/*.mrc | head -5 > 5_files_gain.lst
 relion_convert_to_tiff --i 5_files_gain.lst --estimate_gain --o $dest_dir
 
 gain_estimate=$dest_dir/gain_estimate.bin
