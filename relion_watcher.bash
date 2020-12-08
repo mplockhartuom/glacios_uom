@@ -55,7 +55,7 @@ relion_convert_to_tiff --i 5_files_gain.lst --estimate_gain --o $dest_dir
 gain_estimate=$dest_dir/gain_estimate.bin
 
 ls *.mrc > existing_files.lst
-relion_convert_to_tiff --i existing_files.lst --gain $gain_estimate --o $dest_dir &
+relion_convert_to_tiff --i existing_files.lst --gain $gain_estimate --o $dest_dir --only_do_unfinished &
 cd $current_dir
 
 # start running the watching script for new  Linear file format files.
@@ -70,6 +70,3 @@ inotifywait -mr --event create --event moved_to --format '%e %w%f' $collection_d
       fi
     fi
   done
-  
-
-
