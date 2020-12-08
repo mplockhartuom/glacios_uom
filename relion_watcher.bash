@@ -64,9 +64,9 @@ inotifywait -mr --event create --event moved_to --format '%e %w%f' $collection_d
     echo "$FILE triggered with $ACTION"
     if [[ "$FILE" =~ .*mrc$ ]]; then
       if [[ "$ACTION" = "MOVED_TO"  ]] ; then
-    . ./relion_do_conv_gain.bash $FILE $collection_dir $dest_dir $gain_estimate &
+    . ./relion_do_conv_gain.bash $FILE $collection_dir $dest_dir &
     else 
-      . ./relion_converter_gain.bash $FILE $collection_dir $dest_dir $gain_estimate &
+      . ./relion_converter_gain.bash $FILE $collection_dir $dest_dir &
       fi
     fi
   done
