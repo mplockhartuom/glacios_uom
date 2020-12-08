@@ -33,25 +33,7 @@ else
   exit
 fi
 
-: << 'IGNORE'
-echo "Path to gain image (inclusive of the .mrc file): "
-read gain_image
-#if [[ -f $gain_image ]] 
-#then
-#  echo "$gain_image exists"
-#else  
-#  echo "###################################"
-#  echo "#                                 #"
-#  echo "#    That is not a real file.     #"
-  echo "#                                 #"
-  echo "###################################"
-  exit
-fi
-echo "Moving gain to destination folder"
-echo "clip flipx $gain_image gain_flipx.mrc"
-gain_flipped="gain_flipx.mrc"
-echo "rsync -aPhzv *gain_flipx.mrc $dest_dir"
-IGNORE
+
 
 # Make a list of existing mrc files and start converting them
 
@@ -68,11 +50,12 @@ if [[ "ls *.mrc"  < "5" ]] ;
 fi
 
 ls *.mrc | head -5 > 5_files_gain.lst
+relion_convert_to_tiff --i 5_files_gain.lst --estimate_gain --o $dest_dir
 
-relion_convert_to_tiff --i 5_files_gain.lst --estinate_gain --o $dest_dir
+gain_estimate=$dest_dir/gain_estimate.bin
 
 ls *.mrc > existing_files.lst
-relion_convert_to_tiff --i existing_files.lst --gain $dest_dir/gain_estimate.bin --o $dest_dir &
+relion_convert_to_tiff --i existing_files.lst --gain $gain_estimate --o $dest_dir &
 cd $current_dir
 
 # start running the watching script for new  Linear file format files.
@@ -81,9 +64,9 @@ inotifywait -mr --event create --event moved_to --format '%e %w%f' $collection_d
     echo "$FILE triggered with $ACTION"
     if [[ "$FILE" =~ .*mrc$ ]]; then
       if [[ "$ACTION" = "MOVED_TO"  ]] ; then
-    . ./relion_do_conv_gain.bash $FILE $collection_dir $dest_dir &
+    . ./relion_do_conv_gain.bash $FILE $collection_dir $dest_dir $gain_estimate &
     else 
-      . ./relion_converter_gain.bash $FILE $collection_dir $dest_dir &
+      . ./relion_converter_gain.bash $FILE $collection_dir $dest_dir $gain_estimate &
       fi
     fi
   done
